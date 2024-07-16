@@ -1,19 +1,32 @@
 import { useRef, useState } from 'react';
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import './Home.scss';
 
+// Firebase 
+import { auth } from "../../fireBaseConnection";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 function Home() {
+
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const emailInputRef = useRef<HTMLInputElement>(null);
 
-    function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         if(email !== "" && password !== "") {
-            alert("Logado");
+            await signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                navigate("/admin", {replace: true});
+            })
+            .catch(() => {
+                alert("Erro ao fazer login!");
+            })
         } else {
             alert("Digite email e senha");
             if (emailInputRef.current) {
